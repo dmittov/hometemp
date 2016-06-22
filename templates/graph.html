@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Graph</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"
+            charset="utf-8"></script>
+    <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="{{ url_for('static', filename='js/graph.js') }}"></script>
+    <link rel="stylesheet" type="text/css"
+          href="{{ url_for('static', filename='css/graph.css') }}">
+</head>
+<body>
+    <div>
+        <span>Текущая температура воздуха
+            {{ format_temp(current_readings.temp) }}
+            влажность {{ format_humid(current_readings.humidity) }}
+        </span>
+    </div>
+    <div>
+        {{ svg_image | safe }}
+    </div>
+    <div id="d3"></div>
+</body>
+</html>
