@@ -2,11 +2,26 @@
  * Created by Dmitry Mittov <mittov@gmail.com> on 2/6/16.
  */
 
-function draw(data) {
-    var svg = d3.select('#d3').append('p');
-    svg.text(data);
+function load_data(chart) {
+    return function(data) {
+        chart.load({columns: data});
+    }
 }
 
 $( document ).ready(function() {
-    $.getJSON('day/home_DHT22', draw);
+    var chart = c3.generate({
+        bindto: '#chart',
+        data: {
+            columns: [],
+            axes: {
+                humidity: 'y2'
+            }
+        },
+        axis: {
+            y2: {
+                show: true
+            }
+        }
+    });
+    $.getJSON('day/home_DHT22', load_data(chart));
 });
