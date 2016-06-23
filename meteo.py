@@ -47,6 +47,23 @@ class MeteoState(ndb.Model):
                                   cls.sensor == sensor))
         return query.fetch()
 
+
+class MeteoStateStub(MeteoState):
+
+    @classmethod
+    def day_data(cls, sensor):
+        with open('stubs/day_data.json') as fh:
+            content = fh.read()
+        return json.loads(content)
+
+    @classmethod
+    def current_readings(cls, sensor):
+        state = MeteoStateStub()
+        state.temp = 25.0
+        state.humidity = 50.0
+        return state
+
+
 def process_state(sensor, state):
     meteo_state = MeteoState()
     meteo_state.sensor = sensor

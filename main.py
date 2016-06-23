@@ -2,8 +2,9 @@
 from flask import Flask, request, render_template
 from flask import Response, Request
 import json
+import logging
+import appcfg
 import meteo
-import graph
 
 __author__ = 'Dmitry Mittov <mittov@gmail.com>'
 
@@ -15,12 +16,10 @@ app.jinja_env.globals.update(format_temp=meteo.format_temp)
 app.jinja_env.globals.update(format_humid=meteo.format_humid)
 
 @app.route('/')
-def hello_world():
-    svg_image = graph.plot_data()
+def main_page():
+    current_readings = appcfg.MeteoState.current_readings(appcfg.SENSOR_ID)
     return render_template('graph.html',
-                           current_readings=\
-                               meteo.MeteoState.current_readings('home_DHT22'),
-                           svg_image=svg_image)
+                           current_readings=current_readings)
 
 
 @app.route('/sensor/<name>', methods=['POST'])
@@ -29,15 +28,19 @@ def add_sensor_data(name):
     return "{'msg': 'ok'}", HTTP_201_CREATED
 
 
+def transform_c3(meteo_states):
+    temp = ['temp']
+    temp += [float(state['temp']) for state in meteo_states]
+    humidity = ['humidity']
+    humidity += [float(state['humidity']) for state in meteo_states]
+    return [temp, humidity]
+
+
 @app.route('/day/<sensor>')
 def get_last_day_data(sensor):
-    meteo_list = meteo.MeteoState.day_data(sensor)
-    json_data = json.dumps(map(
-        lambda state: {'dttm': state.dttm.isoformat(),
-                       'temp': '{0:.1f}'.format(state.temp),
-                       'humidity': '{0:.1f}'.format(state.humidity)},
-        meteo_list))
-    response = Response(response=json_data,
+    meteo_states = appcfg.MeteoState.day_data(sensor)
+    data = transform_c3(meteo_states)
+    response = Response(response=json.dumps(data),
                         status=200,
                         mimetype="application/json")
     return response
