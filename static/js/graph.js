@@ -15,6 +15,11 @@ $( document ).ready(function() {
             columns: [],
             axes: {
                 humidity: 'y2'
+            },
+            type: 'spline',
+            colors: {
+                humidity: '#0099ff',
+                temp: '#ff5050'
             }
         },
         axis: {

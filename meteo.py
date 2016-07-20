@@ -2,6 +2,7 @@
 from google.appengine.ext import ndb
 import json
 from datetime import date, timedelta, datetime
+from collections import namedtuple
 
 __author__ = 'Dmitry Mittov <mittov@gmail.com>'
 
@@ -28,7 +29,7 @@ class MeteoState(ndb.Model):
     @classmethod
     def day_data(cls, sensor):
         (_, _), data = cls.last_day(sensor)
-        return data
+        return data[::60]
 
     @classmethod
     def last_day(cls, sensor):
@@ -50,11 +51,15 @@ class MeteoState(ndb.Model):
 
 class MeteoStateStub(MeteoState):
 
+    from collections import namedtuple
+
     @classmethod
     def day_data(cls, sensor):
         with open('stubs/day_data.json') as fh:
-            content = fh.read()
-        return json.loads(content)
+            raw_content = fh.read()
+        content = json.loads(raw_content)
+        return [namedtuple('GenericDict', item.keys())(**item)
+                for item in content]
 
     @classmethod
     def current_readings(cls, sensor):

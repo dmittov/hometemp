@@ -5,6 +5,7 @@ import json
 import logging
 import appcfg
 import meteo
+import filterpy
 
 __author__ = 'Dmitry Mittov <mittov@gmail.com>'
 
@@ -30,9 +31,9 @@ def add_sensor_data(name):
 
 def transform_c3(meteo_states):
     temp = ['temp']
-    temp += [float(state['temp']) for state in meteo_states]
+    temp += [float(state.temp) for state in meteo_states]
     humidity = ['humidity']
-    humidity += [float(state['humidity']) for state in meteo_states]
+    humidity += [float(state.humidity) for state in meteo_states]
     return [temp, humidity]
 
 
